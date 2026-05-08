@@ -2215,6 +2215,9 @@ function saveOneScore(sid,ts,ansIdx){
   saveLocal();
   saveResultToFirebase(r); // ★ Firebase 개별 저장
   liveScoreSum();
+  // ★ 최종 점수 입력란도 자동 업데이트
+  var finEl=document.getElementById('rd-finalScore');
+  if(finEl) finEl.value=r.provScore;
   // Flash saved
   var btn=event.target;
   var orig=btn.textContent;btn.textContent='저장됨 ✓';btn.style.background='#1b4332';
