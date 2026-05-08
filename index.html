@@ -1693,7 +1693,7 @@ function showStudentResult(r){
   var g=grade(r.provPct);
   document.getElementById('sr-studinfo').textContent=r.sname+' ('+r.sid+') · '+r.time;
   document.getElementById('sr-score').textContent=r.provPct+'점';
-  document.getElementById('sr-label').textContent='가 점수 (잠정) · '+r.provScore+' / '+r.total+'점';
+  document.getElementById('sr-label').textContent='가 점수 (잠정) · 실제: '+r.provScore+'/'+r.total+'점 → 100점 환산: '+r.provPct+'점';
   document.getElementById('sr-stats').innerHTML=
     '<div class="sc"><div class="sv" style="color:'+g.c+'">'+g.g+'</div><div class="sl">잠정 등급</div></div>'+
     '<div class="sc"><div class="sv">'+r.answers.filter(function(a){return a.ok;}).length+'</div><div class="sl">자동채점 정답</div></div>'+
@@ -1848,6 +1848,7 @@ function _doRenderReports(){
         '</div>'+
         '<div style="text-align:right;margin-right:8px;cursor:pointer;" onclick="showReportDetail(\''+r.sid+'\','+r.ts+')">'+
           '<div style="font-size:17px;font-weight:700;">'+scoreDisplay+'점</div>'+
+          '<div style="font-size:11px;color:#999;">'+(r.finalized?r.finalScore:r.provScore)+'/'+r.total+'점</div>'+
           '<div style="font-size:13px;font-weight:700;color:'+g.c+';">'+g.g+'</div>'+
         '</div>'+
         '<button class="btn btn-sm btn-amber" onclick="allowRetake(\''+r.sid+'\','+r.ts+',event)" title="이 학생 재응시 허용">재응시</button>'+
@@ -1979,11 +1980,12 @@ function printStudentSingle(r){
         '학번: <b>'+escHtml(r.sid)+'</b> &nbsp;|&nbsp; 이름: <b>'+escHtml(r.sname)+'</b> &nbsp;|&nbsp; 응시: '+r.time+' &nbsp;|&nbsp; 소요: '+r.elapsed+'초'+
       '</div>'+
       '<table class="score-summary" style="margin-top:10px;">'+
-        '<tr><th>가 점수</th><th>최종 점수</th><th>만점</th><th>등급</th></tr>'+
+        '<tr><th>실제 점수</th><th>만점</th><th>100점 환산</th><th>최종 점수(환산)</th><th>등급</th></tr>'+
         '<tr>'+
-          '<td>'+r.provPct+'점</td>'+
-          '<td style="font-weight:700;color:'+g.c+';">'+(r.finalized?r.finalPct+'점':'확정 전')+'</td>'+
+          '<td>'+(r.finalized?r.finalScore:r.provScore)+'점</td>'+
           '<td>'+r.total+'점</td>'+
+          '<td style="font-weight:700;">'+(r.finalized?r.finalPct:r.provPct)+'점</td>'+
+          '<td style="font-weight:700;color:'+g.c+';">'+(r.finalized?r.finalPct+'점':'확정 전')+'</td>'+
           '<td style="font-weight:700;color:'+g.c+';">'+g.g+'</td>'+
         '</tr>'+
       '</table>'+
@@ -2077,6 +2079,7 @@ function showReportDetail(sid, ts){
       '</div>'+
       '<div style="text-align:right;">'+
         '<div style="font-size:32px;font-weight:700;">'+(r.finalized?r.finalPct:r.provPct)+'점</div>'+
+        '<div style="font-size:11px;color:#999;margin-top:2px;">실제 '+(r.finalized?r.finalScore:r.provScore)+'/'+r.total+'점 → 100점 환산</div>'+
         '<div style="font-size:13px;color:'+g.c+';font-weight:700;">'+g.g+
           (r.finalized?' <span class="badge b-final">최종</span>':' <span class="badge b-prov">가점수</span>')+
         '</div>'+
