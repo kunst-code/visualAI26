@@ -2002,8 +2002,9 @@ function printStudentSingle(r){
         if(!isOk&&q.aliases) q.aliases.forEach(function(al){if(_n(a.given)===_n(al))isOk=true;});
       } else if(q.type==='es') isOk=a.ok;
     }
-    var chipCls=isPend?'pend':isOk?'ok':'bad';
-    var chipTxt=isPend?'채점 대기':(isOk?'✓ 정답 '+a.pts+'점':'✗ 오답 '+a.pts+'점');
+    var isPartial=(!isOk&&!isPend&&!isTO&&a.pts>0);
+    var chipCls=isPend?'pend':isOk?'ok':isPartial?'pend':'bad';
+    var chipTxt=isPend?'채점 대기':isOk?'✓ 정답 '+a.pts+'점':isPartial?'◑ 부분정답 '+a.pts+'점':'✗ 오답 '+a.pts+'점';
     section+='<div class="q-block">'+
       '<div class="q-num">Q'+(i+1)+' ['+typemap[q.type]+']'+
         ' <span class="q-pts">'+q.points+'점</span>'+
@@ -2116,7 +2117,8 @@ function showReportDetail(sid, ts){
       '</tr></thead><tbody>'+
     r.answers.map(function(a,i){
       var q=DB.questions.find(function(x){return x.id===a.qid;})||DB.questions[a.qi]||{text:'Q'+(i+1),points:0,type:a.type,opts:[],ans:0};
-      var rowBg=a.ok?'#f0faf4':a.pendingManual?'#fffbeb':'#fff5f5';
+      var isPartialBg=(!a.ok&&!a.pendingManual&&!a.timeout&&a.pts>0);
+      var rowBg=a.ok?'#f0faf4':a.pendingManual?'#fffbeb':isPartialBg?'#fffbeb':'#fff5f5';
 
       // 제출 답안
       var givenDisp='(미응답)';
@@ -2133,7 +2135,8 @@ function showReportDetail(sid, ts){
       else if(q.type==='es') correctDisp='<span style="color:#888;font-size:11px;">수동채점</span>';
 
       // 자동채점 결과 아이콘
-      var icon=a.pendingManual?'⏳':a.ok?'<span style="color:#1b4332;font-weight:700;">✓</span>':'<span style="color:#922b21;font-weight:700;">✗</span>';
+      var isPartialScore=(!a.ok&&!a.pendingManual&&!a.timeout&&a.pts>0);
+      var icon=a.pendingManual?'⏳':a.ok?'<span style="color:#1b4332;font-weight:700;">✓</span>':isPartialScore?'<span style="color:#7d4e00;font-weight:700;">◑</span>':'<span style="color:#922b21;font-weight:700;">✗</span>';
 
       return '<tr style="background:'+rowBg+';border-bottom:1px solid #f0f0ee;">'+
         '<td style="padding:8px 10px;text-align:center;font-weight:700;white-space:nowrap;">'+icon+' Q'+(i+1)+'</td>'+
